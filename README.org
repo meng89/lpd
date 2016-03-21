@@ -1,0 +1,37 @@
+
+#+TITLE: Longman Pronunciation Dictionary dsl data python loader
+
+* About lpd
+lpd is a python module/script can load Longman Pronunciation Dictionary dsl file as format data.
+
+of cause, use it you need got the file which name is like "En-En-Longman_Pronunciation.dsl" first, size about 33M.
+
+just Download lpd.py in your python project folder or add this [[https://github.com/meng89/overlay][overlay]] in your system if your use Gentoo Linux.
+
+I hope you could understand what I wrote in this file. If you want, you can report an issus about this project, even grammatical errors in English.
+# a overlay for Gentoo Linux 
+
+
+* Usage
+** as a module
+#+BEGIN_EXAMPLE
+
+import lpd
+
+lpd.load(dsl='/media/data/En-En-Longman_Pronunciation.dsl')
+
+print(lpd.find('excuse'))
+
+# you will get this:
+[[('excuse',), 'verb', ['ɪkˈskjuːz']], [('excuse',), 'noun', ['ɪkˈskjuːs']]]
+#+END_EXAMPLE
+
+** as a script
+#+BEGIN_EXAMPLE
+# put the dsl file to ~/ first
+>lpd excuse
+[[('excuse',), 'verb', ['ɪkˈskjuːz']], [('excuse',), 'noun', ['ɪkˈskjuːs']]]
+#+END_EXAMPLE
+
+* Author
+Chen Meng observerchan@gmail.com
