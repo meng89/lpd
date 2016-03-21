@@ -9,7 +9,11 @@ setup(name='lpd',
       url='https://github.com/meng89/lpd',
       license='MIT',
       author='Chen Meng',
-      author_email='observerchan@gmail.com',
+      author_email='ObserverChan@gmail.com',
       py_modules=['lpd'],
-      scripts=['lpd.py'],
+      entry_points={
+          'console_scripts': [
+              'lpd=lpd:main',
+          ],
+      },
       )
