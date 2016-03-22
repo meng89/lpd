@@ -17,15 +17,13 @@ lpd.load('/media/data/En-En-Longman_Pronunciation.dsl')
 
 print(lpd.find('excuse'))
 
-# you'll get this:
 # {'noun': ['ɪkˈskjuːs'], 'verb': ['ɪkˈskjuːz']}
 #+END_EXAMPLE
 
 ** as a script
 #+BEGIN_EXAMPLE
-# put the dsl file to ~/ first
 
-> lpd.py excuse --dsl ~/En-En-Longman_Pronunciation.dsl
+lpd.py excuse --dsl ~/En-En-Longman_Pronunciation.dsl
 
-{'verb': ['ɪkˈskjuːz'], 'noun': ['ɪkˈskjuːs']}
+# {'verb': ['ɪkˈskjuːz'], 'noun': ['ɪkˈskjuːs']}
 #+END_EXAMPLE
