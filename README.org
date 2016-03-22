@@ -1,12 +1,11 @@
 
-You need to get the file which name is like "En-En-Longman_Pronunciation.dsl", size about 33M.
 
+First of all, you need to get the file which name is like "En-En-Longman_Pronunciation.dsl", size about 33M.
 
 * Installation
-pip way
-
-
-clone or download lpd.py
+#+BEGIN_EXAMPLE
+pip install git+git://github.com/meng89/lpd@master
+#+END_EXAMPLE
 
 * Usage
 
@@ -14,20 +13,19 @@ clone or download lpd.py
 #+BEGIN_EXAMPLE
 import lpd
 
-lpd.load(dsl='/media/data/En-En-Longman_Pronunciation.dsl')
+lpd.load('/media/data/En-En-Longman_Pronunciation.dsl')
 
 print(lpd.find('excuse'))
 
-# you will get this:
-# [[('excuse',), 'verb', ['ɪkˈskjuːz']], [('excuse',), 'noun', ['ɪkˈskjuːs']]]
+# you'll get this:
+# {'noun': ['ɪkˈskjuːs'], 'verb': ['ɪkˈskjuːz']}
 #+END_EXAMPLE
 
 ** as a script
 #+BEGIN_EXAMPLE
 # put the dsl file to ~/ first
->lpd excuse
-[[('excuse',), 'verb', ['ɪkˈskjuːz']], [('excuse',), 'noun', ['ɪkˈskjuːs']]]
-#+END_EXAMPLE
 
-* Author
-Chen Meng observerchan@gmail.com
+> lpd.py excuse --dsl ~/En-En-Longman_Pronunciation.dsl
+
+{'verb': ['ɪkˈskjuːz'], 'noun': ['ɪkˈskjuːs']}
+#+END_EXAMPLE

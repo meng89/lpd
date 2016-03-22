@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import re
+import logging
 
-__version__ = '0.1.0'
-
-debug_time = False
+__version__ = '0.2.0'
 
 
 lpd = []
@@ -31,7 +30,10 @@ def split_main_words(s):
 def split_main_pss(s):
     """
     "ɪm, (¦ )em" => ['Im','em']
+    :param s:
+    :return:
     """
+
     pss = [ps.strip() for ps in s.split(',')]
     pss = [re.sub('\(? *¦ *\)?', '', ps) for ps in pss]
 
@@ -135,8 +137,8 @@ def analyse(title_word, lines):
 
             main_pss = split_main_pss(ps_clean(m.group('man_pss')))
 
-            if ',' in main_pss and '|' in main_pss and debug_time:
-                print(',| in main_pss:', main_pss)
+            if ',' in main_pss and '|' in main_pss:
+                logging.info(debug_string(',| in main_pss:', main_pss))
 
             lis.append([main_words, word_class, main_pss])
 
@@ -162,17 +164,17 @@ def analyse(title_word, lines):
             if ',' in derivative_words and ',' in sub_pss_str:
                 print('-----WTH-----', derivative_words, sub_pss_str)
 
-            if ',' in dm.group('sub_pss') and debug_time:
-                debug_print(', in sub_pss', title_word, main_pss, derivative_words, sub_pss_str)
+            if ',' in dm.group('sub_pss'):
+                logging.info(debug_string(', in sub_pss', title_word, main_pss, derivative_words, sub_pss_str))
 
-            if '-' in dm.group('sub_pss') and debug_time:
-                debug_print('- in sub_pss', title_word, main_pss, derivative_words, sub_pss_str)
+            if '-' in dm.group('sub_pss'):
+                logging.info(debug_string('- in sub_pss', title_word, main_pss, derivative_words, sub_pss_str))
 
-            if '-' in dm.group('sub_pss') and '/' in dm.group('sub_pss') and debug_time:
-                debug_print('(- and /) in sub_pss', title_word, main_pss, derivative_words, sub_pss_str)
+            if '-' in dm.group('sub_pss') and '/' in dm.group('sub_pss'):
+                logging.info(debug_string('(- and /) in sub_pss', title_word, main_pss, derivative_words, sub_pss_str))
 
-            if '-' in dm.group('sub_pss') and ',' in dm.group('sub_pss') and debug_time:
-                debug_print('(- and ,) in sub_pss', title_word, main_pss, derivative_words, sub_pss_str)
+            if '-' in dm.group('sub_pss') and ',' in dm.group('sub_pss'):
+                logging.info(debug_string('(- and ,) in sub_pss', title_word, main_pss, derivative_words, sub_pss_str))
 
             derivative_words_list = []
             pss_list = []
@@ -187,8 +189,7 @@ def analyse(title_word, lines):
                         derivative_words_list.append(m.group(1)+m.group(2)+m.group(3))
                         pss_list.append(main_ps_head + sub_pss[0] + sub_pss[1])
                     except IndexError:
-                        if debug_time:
-                            debug_print('IndexError:', title_word, main_pss, derivative_word, sub_pss)
+                        logging.warning(debug_string('IndexError:', title_word, main_pss, derivative_word, sub_pss))
                     continue
 
                 # like:  wrapping/s    ˈræp ɪŋ/z
@@ -200,8 +201,7 @@ def analyse(title_word, lines):
                         derivative_words_list.append(m.group(1)+m.group(2))
                         pss_list.append(sub_pss[0] + sub_pss[1])
                     except IndexError:
-                        if debug_time:
-                            debug_print('IndexError:', title_word, main_pss, derivative_word, sub_pss)
+                        logging.warning(debug_string('IndexError:', title_word, main_pss, derivative_word, sub_pss))
                     continue
 
                 # like:  pharisaic|al   əl
@@ -226,11 +226,14 @@ def analyse(title_word, lines):
     return lis
 
 
-def debug_print(info=None, title_words=None, main_pss=None, derivative_words=None, sub_pss=None):
-    print(info)
-    print('    title_words:      {:20}, man_pss: {}'.format(title_words, main_pss))
-    print('    derivative_words: {:20}, sub_pss: {}'.format(derivative_words, sub_pss))
-    print()
+def debug_string(info=None, title_words=None, main_pss=None, derivative_words=None, sub_pss=None):
+
+    s = info + '\n'
+    s += '    title_words:      {:20}, man_pss: {}\n'.format(title_words, main_pss)
+    s += '    derivative_words: {:20}, sub_pss: {}\n'.format(derivative_words, sub_pss)
+    s += '\n'
+
+    return s
 
 
 def load(dsl_path):
@@ -243,9 +246,10 @@ def load(dsl_path):
     qut = 0
     for one in lpd:
         qut += len(one[0])
-    if debug_time:
-        print('Quantity of items:', len(lpd))
-        print('Quantity of words:', qut)
+
+    logging.debug('Quantity of items:', len(lpd))
+    logging.debug('Quantity of words:', qut)
+
     make_lpd_d()
 
 
@@ -277,16 +281,52 @@ def find(word):
 
 
 def main():
-    import sys
-    import os
-    load(dsl_path=os.path.expanduser('~')+os.sep+'En-En-Longman_Pronunciation.dsl')
+    import argparse
+    import logging
 
-    print(find(sys.argv[1]))
+    levels = {
+        'debug': logging.DEBUG,
+        'info': logging.INFO,
+        'warning': logging.WARNING,
+        'error': logging.ERROR,
+        'critical': logging.CRITICAL
+    }
 
-    for one in lpd:
-        pass
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-d',
+                        dest='dsl',
+                        required=True,
+                        metavar='<path>',
+                        help='path to "En-En-Longman_Pronunciation.dsl"')
+
+    parser.add_argument('word', help='the word')
+
+    parser.add_argument('--version',
+                        action='version',
+                        version=__version__,
+                        )
+
+    parser.add_argument(
+        '--log',
+        dest="loglevel",
+        choices=levels.keys(),
+        default='error',
+        metavar='<level>',
+        help='{}'.format(','.join(levels.keys()))
+    )
+
+    args = parser.parse_args()
+
+    logging.basicConfig(level=levels[args.loglevel])
+
+    load(dsl_path=args.dsl)
+
+    if not hasattr(args, 'word'):
+        exit(parser.print_help())
+    else:
+        print(find(args.word))
 
 
 if __name__ == '__main__':
-    debug_time = True
     main()
